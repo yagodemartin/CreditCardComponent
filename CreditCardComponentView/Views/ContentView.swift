@@ -11,8 +11,10 @@ import Combine
 struct ContentView: View {
     
     
-    @State private var date = Date()
-    
+    @State var open = false
+     @State var popoverSize = CGSize(width: 320, height: 300)
+     @State var date: Date = Date()
+
     @State private var degrees: Double = 0
     @State private var flipped:Bool = false
     
@@ -60,10 +62,24 @@ struct ContentView: View {
             TextField("Credit Card" , text: $model.number).textFieldStyle(RoundedBorderTextFieldStyle()).padding([.leading,.trailing]).onReceive(Just(model.number)) { _ in
                 model.number = limitText(textFieldValue: model.number, upper: creditCardLimit)}
             
-            TextField("Expiration" , text: $model.expiryDate).textFieldStyle(RoundedBorderTextFieldStyle()).padding([.leading,.trailing])
-            
-            DatePicker("Fecha", selection: $date, displayedComponents:.date)
-                .datePickerStyle(CompactDatePickerStyle())
+                       
+            HStack {
+                Text("Expiration Date")
+                                   WithPopover(showPopover: $open, popoverSize: popoverSize) {
+                            
+                           
+                               Image(systemName: "calendar")
+                                   .onTapGesture {
+                                       open.toggle()
+                                   }
+                           } popoverContent: {
+                               DatePicker("", selection: $date, displayedComponents: .date)
+                                   .labelsHidden()
+                                   .datePickerStyle(GraphicalDatePickerStyle())
+                                   .padding(.bottom, -40)
+                           }
+                          
+                       }
                             
             
             TextField("CVV" , text: $model.cvv){ (editingChanged)
